@@ -40,3 +40,8 @@ ggplot(data, aes(x=data$skew,fill=data$cond2))+
   geom_density(alpha=.5,position="identity")
 
 ####################################################
+
+# calculate average of four cues across productions for each participant for /s/ and /sh/
+
+subjectaverages <- aggregate(data, by=list(data$subject,data$cond),FUN=mean, na.rm=TRUE, drop=TRUE)
+
