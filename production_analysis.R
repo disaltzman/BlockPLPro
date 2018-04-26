@@ -46,16 +46,56 @@ ggplot(data, aes(x=data$skew,fill=data$cond2))+
 subjectaverages <- aggregate(data, by=list(data$subject,data$cond),FUN=mean, na.rm=TRUE, drop=TRUE)
 
 # subset data to remove variables we're not interested in
-sub.exp <- select(data,"subject","cond","mean")
+sub.exp <- select(data,"subject","cond","mean","sd","kurtosis","skew")
 
-# create loop that performs t-test on means for /s/ and /sh/ by individual subject
+# loop that performs t-test on means for /s/ and /sh/ by individual subject
 p = 1 
-test.output <- data.frame(matrix(ncol = 3, nrow = 0))
-colnames(test.output) <- paste(c('subject','tstatistic','pvalue'))
+test.output.mean <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(test.output.mean) <- paste(c('subject','tstatistic','pvalue'))
 for (i in unique(sub.exp$subject)){
     ttest <- t.test(mean ~ cond, data = sub.exp[sub.exp$subject == i,])
-    test.output[p,1] <- i
-    test.output[p,2] <- ttest$statistic
-    test.output[p,3] <- ttest$p.value
+    test.output.mean[p,1] <- i
+    test.output.mean[p,2] <- ttest$statistic
+    test.output.mean[p,3] <- ttest$p.value
     p = p + 1
-    }
+}
+
+# loop that performs t-test on standard deviation for /s/ and /sh/ by individual subject
+p = 1 
+test.output.sd <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(test.output.sd) <- paste(c('subject','tstatistic','pvalue'))
+for (i in unique(sub.exp$subject)){
+  ttest <- t.test(sd ~ cond, data = sub.exp[sub.exp$subject == i,])
+  test.output.sd[p,1] <- i
+  test.output.sd[p,2] <- ttest$statistic
+  test.output.sd[p,3] <- ttest$p.value
+  p = p + 1
+}
+
+# loop that performs t-test on kurtosis for /s/ and /sh/ by individual subject
+p = 1 
+test.output.kurtosis <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(test.output.kurtosis) <- paste(c('subject','tstatistic','pvalue'))
+for (i in unique(sub.exp$subject)){
+  ttest <- t.test(kurtosis ~ cond, data = sub.exp[sub.exp$subject == i,])
+  test.output.kurtosis[p,1] <- i
+  test.output.kurtosis[p,2] <- ttest$statistic
+  test.output.kurtosis[p,3] <- ttest$p.value
+  p = p + 1
+}
+
+
+# loop that performs t-test on skew for /s/ and /sh/ by individual subject
+p = 1 
+test.output.skew <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(test.output.skew) <- paste(c('subject','tstatistic','pvalue'))
+for (i in unique(sub.exp$subject)){
+  ttest <- t.test(skew ~ cond, data = sub.exp[sub.exp$subject == i,])
+  test.output.skew[p,1] <- i
+  test.output.skew[p,2] <- ttest$statistic
+  test.output.skew[p,3] <- ttest$p.value
+  p = p + 1
+}
+
+# t-test to see if centroid mean changes as function of order
+ttest <- t.test(mean ~ cond2, data = )
