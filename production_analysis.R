@@ -13,7 +13,7 @@ data <- as.data.frame(read.delim(file='blockPLPRo_acoustic_analysis.txt', sep='\
 
 # create distribution figures
 # individual subject mean
-ggplot(data, aes(x=data$mean,fill=data$cond))+
+ggplot(data, aes(x=data$centroid,fill=data$cond))+
     geom_density(alpha=.5,position="identity") +
     facet_wrap(~subject)
     
