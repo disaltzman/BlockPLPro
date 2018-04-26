@@ -18,9 +18,9 @@ ggplot(data, aes(x=data$centroid,fill=data$cond))+
     facet_wrap(~subject)
     
 # mean
-cdat <- ddply(data, "cond2", summarise, rating.mean=mean(mean))
+cdat <- ddply(data, "cond2", summarise, rating.mean=mean(centroid))
 
-ggplot(data, aes(x=data$mean,fill=data$cond2))+
+ggplot(data, aes(x=data$centroid,fill=data$cond2))+
   geom_density(alpha=.5,position="identity") + 
   geom_vline(data=cdat, aes(xintercept=rating.mean,  colour=cond2),
              linetype="dashed", size=1)
@@ -28,8 +28,8 @@ ggplot(data, aes(x=data$mean,fill=data$cond2))+
 ggplot(data, aes(x=data$sd,fill=data$cond2))+
   geom_density(alpha=.5,position="identity")
 
-# kurtosis
-ggplot(data, aes(x=data$kurtosis,fill=data$cond2))+
+# kur
+ggplot(data, aes(x=data$kur,fill=data$cond2))+
   geom_density(alpha=.5,position="identity")
 
 # dur
@@ -46,14 +46,14 @@ ggplot(data, aes(x=data$skew,fill=data$cond2))+
 subjectaverages <- aggregate(data, by=list(data$subject,data$cond),FUN=mean, na.rm=TRUE, drop=TRUE)
 
 # subset data to remove variables we're not interested in
-sub.exp <- select(data,"subject","cond","mean","sd","kurtosis","skew")
+sub.exp <- select(data,"subject","cond","centroid","sd","kur","skew")
 
 # loop that performs t-test on means for /s/ and /sh/ by individual subject
 p = 1 
 test.output.mean <- data.frame(matrix(ncol = 3, nrow = 0))
 colnames(test.output.mean) <- paste(c('subject','tstatistic','pvalue'))
 for (i in unique(sub.exp$subject)){
-    ttest <- t.test(mean ~ cond, data = sub.exp[sub.exp$subject == i,])
+    ttest <- t.test(centroid ~ cond, data = sub.exp[sub.exp$subject == i,])
     test.output.mean[p,1] <- i
     test.output.mean[p,2] <- ttest$statistic
     test.output.mean[p,3] <- ttest$p.value
@@ -72,15 +72,15 @@ for (i in unique(sub.exp$subject)){
   p = p + 1
 }
 
-# loop that performs t-test on kurtosis for /s/ and /sh/ by individual subject
+# loop that performs t-test on kur for /s/ and /sh/ by individual subject
 p = 1 
-test.output.kurtosis <- data.frame(matrix(ncol = 3, nrow = 0))
-colnames(test.output.kurtosis) <- paste(c('subject','tstatistic','pvalue'))
+test.output.kur <- data.frame(matrix(ncol = 3, nrow = 0))
+colnames(test.output.kur) <- paste(c('subject','tstatistic','pvalue'))
 for (i in unique(sub.exp$subject)){
-  ttest <- t.test(kurtosis ~ cond, data = sub.exp[sub.exp$subject == i,])
-  test.output.kurtosis[p,1] <- i
-  test.output.kurtosis[p,2] <- ttest$statistic
-  test.output.kurtosis[p,3] <- ttest$p.value
+  ttest <- t.test(kur ~ cond, data = sub.exp[sub.exp$subject == i,])
+  test.output.kur[p,1] <- i
+  test.output.kur[p,2] <- ttest$statistic
+  test.output.kur[p,3] <- ttest$p.value
   p = p + 1
 }
 
@@ -98,4 +98,5 @@ for (i in unique(sub.exp$subject)){
 }
 
 # t-test to see if centroid mean changes as function of order
-ttest <- t.test(mean ~ cond2, data = )
+ttest_S <- t.test(centroid ~ cond2, data=data[data$cond2 == "s_S_SH"|data$cond2=="s_SH_S",])
+ttest_SH <- t.test(centroid ~ cond2, data=data[data$cond2 == "sh_S_SH"|data$cond2=="sh_SH_S",])
